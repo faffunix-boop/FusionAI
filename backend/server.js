@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const fusionAnswer = require("./fusion");
 
 const app = express();
@@ -7,24 +8,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. Route utama (untuk elak error "Cannot GET /")
+// Memberitahu server untuk hantar fail index.html apabila orang buka laman web
 app.get("/", (req, res) => {
-    res.send("Server berjalan dengan baik!");
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 2. Route untuk AI chat
+// Route untuk AI chat
 app.post("/chat", async (req, res) => {
     try {
         let jawapan = await fusionAnswer(req.body.question);
-        res.json({
-            answer: jawapan
-        });
+        res.json({ answer: jawapan });
     } catch (error) {
         res.status(500).json({ error: "Ada masalah pada server" });
     }
 });
 
-// 3. Guna process.env.PORT (penting untuk Render)
+// Guna port dari Render atau 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server jalan di port ${port}!`);
