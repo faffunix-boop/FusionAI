@@ -5,140 +5,123 @@ function App() {
   const [msg, setMsg] = useState("");
   const [chat, setChat] = useState([]);
   const [load, setLoad] = useState(false);
-
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const [error, setError] = useState(null);
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [chat, load]); 
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat, load]);
 
   async function send() {
-    if (!msg.trim()) return;
+    if (!msg.trim() || load) return;
 
-    let text = msg;
-
-    setChat((prev) => [
-      ...prev,
-      {
-        type: "user",
-        text: text,
-      },
-    ]);
-
+    const text = msg;
+    setChat((prev) => [...prev, { type: "user", text }]);
     setMsg("");
     setLoad(true);
+    setError(null);
 
     try {
-      // URL telah diganti ke backend Render Anda
-      const res = await fetch("https://fusionai-1.onrender.com/chat", {
-
+      const res = await fetch("/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: text,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: text }),
       });
+
+      if (!res.ok) {
+        throw new Error(`Server balas status ${res.status}`);
+      }
 
       const data = await res.json();
 
+      setChat((prev) => [...prev, { type: "ai", text: data.answer }]);
+    } catch (err) {
+      setError("Gagal hubungi server. Cuba refresh — server mungkin baru 'bangun' dari sleep.");
       setChat((prev) => [
         ...prev,
-        {
-          type: "ai",
-          text: data.reply,
-        },
+        { type: "ai", text: "⚠️ Maaf, saya tak dapat balas sekarang. Sila cuba lagi." },
       ]);
-    } catch (error) {
-      console.error("Gagal menghubungi server:", error);
-      setChat((prev) => [
-        ...prev,
-        {
-          type: "ai",
-          text: "Maaf, terjadi kesalahan saat menghubungi server. Pastikan backend di Render sudah aktif.",
-        },
-      ]);
+      console.error(err);
     } finally {
       setLoad(false);
     }
   }
 
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  }
+
   return (
-    <div className="chat-layout">
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <span className="logo-icon">⚡</span>
-          <div>
-            <h1>FusionAI</h1>
-          </div>
+    <div className="app">
+      <div className="top">
+        <div className="mark">
+          <span className="mark-cyan" />
+          <span className="mark-coral" />
         </div>
-        <div className="sidebar-content">
-          <p className="subtitle">Gemini + Groq Intelligence</p>
-        </div>
-      </aside>
-
-      <main className="main-content">
-        <header className="mobile-header">
-          <span className="logo-icon">⚡</span>
+        <div>
           <h1>FusionAI</h1>
-        </header>
-
-        <div className="chat-area">
-          {chat.length === 0 && (
-            <div className="empty-state">
-              <h2>Halo! Saya FusionAI.</h2>
-              <p>Ada yang bisa saya bantu hari ini?</p>
-            </div>
-          )}
-
-          {chat.map((c, i) => (
-            <div key={i} className={`message-wrapper ${c.type}`}>
-              <div className="message-bubble">{c.text}</div>
-            </div>
-          ))}
-
-          {load && (
-            <div className="message-wrapper ai">
-              <div className="message-bubble loading">
-                AI sedang berfikir... 🤖
-              </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
+          <p>Gemini + Groq Intelligence</p>
         </div>
+      </div>
 
-        <div className="input-container">
-          <div className="input-box">
-            <input
-              className="chat-input"
-              value={msg}
-              onChange={(e) => setMsg(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Tanya sesuatu..."
-              disabled={load}
-            />
-            <button 
-              className="send-button" 
-              onClick={send} 
-              disabled={!msg.trim() || load}
-            >
-              ➤
-            </button>
+      <div className="chat">
+        {chat.length === 0 && !load && (
+          <div className="empty-state">
+            <div className="empty-mark">
+              <span className="mark-cyan" />
+              <span className="mark-coral" />
+            </div>
+            <p>Tanya apa sahaja. Saya sedia bantu.</p>
           </div>
-          <div className="disclaimer">
-            FusionAI dapat membuat kesalahan. Harap periksa kembali informasi penting.
+        )}
+
+        {chat.map((c, i) => (
+          <div key={i} className={`row row-${c.type}`}>
+            {c.type === "ai" && (
+              <span className="msg-mark">
+                <span className="mark-cyan" />
+                <span className="mark-coral" />
+              </span>
+            )}
+            <div className={c.type}>{c.text}</div>
           </div>
-        </div>
-      </main>
+        ))}
+
+        {load && (
+          <div className="row row-ai">
+            <span className="msg-mark">
+              <span className="mark-cyan" />
+              <span className="mark-coral" />
+            </span>
+            <div className="ai typing">
+              <span className="typing-label">AI sedang berfikir</span>
+              <span className="core" />
+            </div>
+          </div>
+        )}
+
+        <div ref={chatEndRef} />
+      </div>
+
+      {error && <div className="error-banner">{error}</div>}
+
+      <div className="inputBox">
+        <input
+          value={msg}
+          onChange={(e) => setMsg(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Tanya sesuatu..."
+          disabled={load}
+        />
+        <button onClick={send} disabled={load || !msg.trim()} aria-label="Hantar">
+          ➤
+        </button>
+      </div>
     </div>
   );
 }
 
 export default App;
-
