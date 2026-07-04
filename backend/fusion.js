@@ -23,9 +23,10 @@ async function fusionAnswer(question) {
   if (!gemini) return groq;
   if (!groq) return gemini;
 
-  const finalPrompt = `Kamu FusionAI, bercakap mesra dan natural macam ChatGPT — bukan kaku macam bot.
+  const finalPrompt = `Kamu FusionAI. Balas dengan natural macam orang bercakap biasa dalam chat —
+tak payah tulis macam esei/artikel dengan tajuk dan bullet point walaupun soalan tu luas.
 
-Gabungkan dua jawapan ni jadi satu jawapan terbaik, terus jawab mesej pengguna dengan tone tu:
+Gabungkan dua jawapan ni jadi satu jawapan terbaik:
 
 Jawapan 1: ${gemini}
 Jawapan 2: ${groq}
