@@ -9,11 +9,24 @@ function App() {
   const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
   const [copiedIdx, setCopiedIdx] = useState(null);
+  const [truncatedMap, setTruncatedMap] = useState({});
+  const [expandedCode, setExpandedCode] = useState(null);
+  const codeRefs = useRef({});
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, load]);
+
+  useEffect(() => {
+    const newTruncated = {};
+    Object.entries(codeRefs.current).forEach(([key, el]) => {
+      if (el && el.scrollHeight > el.clientHeight + 2) {
+        newTruncated[key] = true;
+      }
+    });
+    setTruncatedMap(newTruncated);
+  }, [chat]);
 
   async function send() {
     // Guard: kosong ATAU sedang loading -> tak boleh hantar (elak double-send)
@@ -136,27 +149,38 @@ function App() {
                           {copiedIdx === key ? "Disalin!" : "Salin"}
                         </button>
                       </div>
-                      <SyntaxHighlighter
-                        language={seg.lang}
-                        style={oneDark}
-                        wrapLongLines={true}
-                        customStyle={{
-                          margin: 0,
-                          borderRadius: "0 0 10px 10px",
-                          fontSize: "12.5px",
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-all",
-                          overflowX: "hidden",
-                        }}
-                        codeTagProps={{
-                          style: {
-                            whiteSpace: "pre-wrap",
-                            wordBreak: "break-all",
-                          },
-                        }}
+                      <div
+                        className="code-block-body"
+                        ref={(el) => (codeRefs.current[key] = el)}
+                        onClick={() =>
+                          truncatedMap[key] &&
+                          setExpandedCode({ lang: seg.lang, content: seg.content })
+                        }
+                        style={{ cursor: truncatedMap[key] ? "pointer" : "default" }}
                       >
-                        {seg.content}
-                      </SyntaxHighlighter>
+                        <SyntaxHighlighter
+                          language={seg.lang}
+                          style={oneDark}
+                          customStyle={{
+                            margin: 0,
+                            borderRadius: "0 0 10px 10px",
+                            fontSize: "12.5px",
+                            whiteSpace: "pre-wrap",
+                            overflowWrap: "break-word",
+                          }}
+                          codeTagProps={{
+                            style: {
+                              whiteSpace: "pre-wrap",
+                              overflowWrap: "break-word",
+                            },
+                          }}
+                        >
+                          {seg.content}
+                        </SyntaxHighlighter>
+                        {truncatedMap[key] && (
+                          <div className="code-fade">Ketuk untuk lihat penuh</div>
+                        )}
+                      </div>
                     </div>
                   ) : (
                     seg.content.trim() && (
@@ -200,6 +224,40 @@ function App() {
           ➤
         </button>
       </div>
+
+      {expandedCode && (
+        <div className="code-modal-overlay" onClick={() => setExpandedCode(null)}>
+          <div className="code-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="code-modal-header">
+              <span className="code-lang">{expandedCode.lang}</span>
+              <button
+                className="code-modal-close"
+                onClick={() => setExpandedCode(null)}
+                aria-label="Tutup"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="code-modal-body">
+              <SyntaxHighlighter
+                language={expandedCode.lang}
+                style={oneDark}
+                customStyle={{
+                  margin: 0,
+                  fontSize: "13px",
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "break-word",
+                }}
+                codeTagProps={{
+                  style: { whiteSpace: "pre-wrap", overflowWrap: "break-word" },
+                }}
+              >
+                {expandedCode.content}
+              </SyntaxHighlighter>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
