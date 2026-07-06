@@ -110,8 +110,8 @@ function App() {
           <span className="mark-coral" />
         </div>
         <div>
-          <h1>OrionAI</h1>
-          <p>multi ai</p>
+          <h1>FusionAI</h1>
+          <p>Gemini Intelligence</p>
         </div>
       </div>
 
@@ -128,12 +128,6 @@ function App() {
 
         {chat.map((c, i) => (
           <div key={i} className={`row row-${c.type}`}>
-            {c.type === "ai" && (
-              <span className="msg-mark">
-                <span className="mark-cyan" />
-                <span className="mark-coral" />
-              </span>
-            )}
             <div className={c.type}>
               {c.text &&
                 parseMessage(c.text).map((seg, idx) => {
@@ -196,10 +190,6 @@ function App() {
 
         {load && (
           <div className="row row-ai">
-            <span className="msg-mark">
-              <span className="mark-cyan" />
-              <span className="mark-coral" />
-            </span>
             <div className="ai typing">
               <span className="typing-label">AI sedang berfikir</span>
               <span className="core" />
