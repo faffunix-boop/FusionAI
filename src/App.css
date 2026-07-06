@@ -151,11 +151,10 @@ body {
 }
 
 .row-user {
-  align-self: flex-end;
-  flex-direction: row-reverse;
+  justify-content: flex-end;
 }
 .row-ai {
-  align-self: flex-start;
+  justify-content: flex-start;
 }
 
 .user {
@@ -172,11 +171,11 @@ body {
 }
 
 .ai {
-  max-width: 100%;
-  padding: 15px 18px;
-  border-radius: 18px 18px 18px 4px;
-  background: var(--panel);
-  border: 1px solid var(--line);
+  width: 100%;
+  padding: 8px 0 8px 14px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
   border-left: 2px solid var(--cyan-dim);
   color: var(--text);
   font-size: 14.5px;
