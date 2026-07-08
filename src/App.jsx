@@ -9,24 +9,11 @@ function App() {
   const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
   const [copiedIdx, setCopiedIdx] = useState(null);
-  const [truncatedMap, setTruncatedMap] = useState({});
-  const [expandedCode, setExpandedCode] = useState(null);
-  const codeRefs = useRef({});
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, load]);
-
-  useEffect(() => {
-    const newTruncated = {};
-    Object.entries(codeRefs.current).forEach(([key, el]) => {
-      if (el && el.scrollHeight > el.clientHeight + 2) {
-        newTruncated[key] = true;
-      }
-    });
-    setTruncatedMap(newTruncated);
-  }, [chat]);
 
   async function send() {
     // Guard: kosong ATAU sedang loading -> tak boleh hantar (elak double-send)
@@ -140,24 +127,37 @@ function App() {
                           className="copy-btn"
                           onClick={() => copyCode(seg.content, key)}
                         >
-                          {copiedIdx === key ? "Disalin!" : "Salin"}
+                          {copiedIdx === key ? (
+                            "Disalin!"
+                          ) : (
+                            <>
+                              <svg
+                                stroke="currentColor"
+                                fill="none"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                height="1em"
+                                width="1em"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                              </svg>
+                              <span>Salin</span>
+                            </>
+                          )}
                         </button>
                       </div>
-                      <div
-                        className="code-block-body"
-                        ref={(el) => (codeRefs.current[key] = el)}
-                        onClick={() =>
-                          truncatedMap[key] &&
-                          setExpandedCode({ lang: seg.lang, content: seg.content })
-                        }
-                        style={{ cursor: truncatedMap[key] ? "pointer" : "default" }}
-                      >
+                      <div className="code-block-body">
                         <SyntaxHighlighter
                           language={seg.lang}
                           style={oneDark}
                           customStyle={{
                             margin: 0,
-                            borderRadius: "0 0 10px 10px",
+                            padding: "1rem",
+                            background: "#0d0d0d",
                             fontSize: "12.5px",
                             whiteSpace: "pre-wrap",
                             overflowWrap: "break-word",
@@ -171,9 +171,6 @@ function App() {
                         >
                           {seg.content}
                         </SyntaxHighlighter>
-                        {truncatedMap[key] && (
-                          <div className="code-fade">Ketuk untuk lihat penuh</div>
-                        )}
                       </div>
                     </div>
                   ) : (
@@ -215,39 +212,6 @@ function App() {
         </button>
       </div>
 
-      {expandedCode && (
-        <div className="code-modal-overlay" onClick={() => setExpandedCode(null)}>
-          <div className="code-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="code-modal-header">
-              <span className="code-lang">{expandedCode.lang}</span>
-              <button
-                className="code-modal-close"
-                onClick={() => setExpandedCode(null)}
-                aria-label="Tutup"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="code-modal-body">
-              <SyntaxHighlighter
-                language={expandedCode.lang}
-                style={oneDark}
-                customStyle={{
-                  margin: 0,
-                  fontSize: "13px",
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "break-word",
-                }}
-                codeTagProps={{
-                  style: { whiteSpace: "pre-wrap", overflowWrap: "break-word" },
-                }}
-              >
-                {expandedCode.content}
-              </SyntaxHighlighter>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
