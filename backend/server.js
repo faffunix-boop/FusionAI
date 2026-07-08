@@ -18,7 +18,7 @@ app.post("/chat", async (req, res) => {
   const { question, history } = req.body;
 
   try {
-    const task = await classifyTask(question);
+    const task = await classifyTask(question, history || []);
 
     let answer;
     if (task === "code") {
