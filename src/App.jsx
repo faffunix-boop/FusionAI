@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import "./App.css";
@@ -77,24 +79,6 @@ function App() {
     }
   }
 
-  function parseMessage(text) {
-    const regex = /```(\w*)\n?([\s\S]*?)```/g;
-    const segments = [];
-    let lastIndex = 0;
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      if (match.index > lastIndex) {
-        segments.push({ type: "text", content: text.slice(lastIndex, match.index) });
-      }
-      segments.push({ type: "code", lang: match[1] || "text", content: match[2] });
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < text.length) {
-      segments.push({ type: "text", content: text.slice(lastIndex) });
-    }
-    return segments;
-  }
-
   function copyCode(content, key) {
     navigator.clipboard.writeText(content).then(() => {
       setCopiedIdx(key);
@@ -106,12 +90,10 @@ function App() {
     <div className="app">
       <div className="top">
         <div className="mark">
-          <span className="mark-cyan" />
-          <span className="mark-coral" />
+          <span className="mark-core" />
         </div>
         <div>
-          <h1>Nexa</h1>
-          <p>Auto Multi AI Agent</p>
+          <h1>Nexa AI</h1>
         </div>
       </div>
 
@@ -119,8 +101,7 @@ function App() {
         {chat.length === 0 && !load && (
           <div className="empty-state">
             <div className="empty-mark">
-              <span className="mark-cyan" />
-              <span className="mark-coral" />
+              <span className="mark-core" />
             </div>
             <p>Tanya apa sahaja. Saya sedia bantu.</p>
           </div>
@@ -129,61 +110,80 @@ function App() {
         {chat.map((c, i) => (
           <div key={i} className={`row row-${c.type}`}>
             <div className={c.type}>
-              {c.text &&
-                parseMessage(c.text).map((seg, idx) => {
-                  const key = `${i}-${idx}`;
-                  return seg.type === "code" ? (
-                    <div key={key} className="code-block-wrapper">
-                      <div className="code-block-header">
-                        <span className="code-lang">{seg.lang}</span>
-                        <button
-                          className="copy-btn"
-                          onClick={() => copyCode(seg.content, key)}
-                        >
-                          {copiedIdx === key ? "Disalin!" : "Salin"}
-                        </button>
-                      </div>
-                      <div
-                        className="code-block-body"
-                        ref={(el) => (codeRefs.current[key] = el)}
-                        onClick={() =>
-                          truncatedMap[key] &&
-                          setExpandedCode({ lang: seg.lang, content: seg.content })
-                        }
-                        style={{ cursor: truncatedMap[key] ? "pointer" : "default" }}
-                      >
-                        <SyntaxHighlighter
-                          language={seg.lang}
-                          style={oneDark}
-                          customStyle={{
-                            margin: 0,
-                            borderRadius: "0 0 10px 10px",
-                            fontSize: "12.5px",
-                            whiteSpace: "pre-wrap",
-                            overflowWrap: "break-word",
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code({ node, inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || "");
+                    const lang = match ? match[1] : "text";
+                    const content = String(children).replace(/\n$/, "");
+                    const key = `code-${i}-${node.position?.start.offset || i}`;
+
+                    if (inline) {
+                      return (
+                        <code className="inline-code" {...props}>
+                          {children}
+                        </code>
+                      );
+                    }
+
+                    return (
+                      <div className="code-block-wrapper">
+                        <div className="code-block-header">
+                          <span className="code-lang">{lang}</span>
+                          <button
+                            className="copy-btn"
+                            onClick={() => copyCode(content, key)}
+                          >
+                            {copiedIdx === key ? "Disalin!" : "Salin"}
+                          </button>
+                        </div>
+                        <div
+                          className="code-block-body"
+                          ref={(el) => (codeRefs.current[key] = el)}
+                          onClick={() =>
+                            truncatedMap[key] &&
+                            setExpandedCode({ lang, content })
+                          }
+                          style={{
+                            cursor: truncatedMap[key] ? "pointer" : "default",
                           }}
-                          codeTagProps={{
-                            style: {
-                              whiteSpace: "pre-wrap",
-                              overflowWrap: "break-word",
-                            },
-                          }}
                         >
-                          {seg.content}
-                        </SyntaxHighlighter>
-                        {truncatedMap[key] && (
-                          <div className="code-fade">Ketuk untuk lihat penuh</div>
-                        )}
+                          <SyntaxHighlighter
+                            language={lang}
+                            style={oneDark}
+                            PreTag="div"
+                            codeTagProps={{
+                              style: {
+                                display: "block",
+                                whiteSpace: "pre-wrap",
+                                wordBreak: "normal",
+                                overflowWrap: "anywhere",
+                                fontStyle: "normal",
+                              },
+                            }}
+                            customStyle={{
+                              margin: 0,
+                              borderRadius: "0 0 10px 10px",
+                              padding: "15px",
+                              fontSize: "12.5px",
+                              lineHeight: "1.55",
+                              backgroundColor: "transparent",
+                            }}
+                          >
+                            {content}
+                          </SyntaxHighlighter>
+                          {truncatedMap[key] && (
+                            <div className="code-fade">Ketuk untuk lihat penuh</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    seg.content.trim() && (
-                      <p key={key} className="msg-text">
-                        {seg.content}
-                      </p>
-                    )
-                  );
-                })}
+                    );
+                  },
+                }}
+              >
+                {c.text}
+              </ReactMarkdown>
             </div>
           </div>
         ))}
