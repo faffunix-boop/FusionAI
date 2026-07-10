@@ -241,9 +241,6 @@ function App() {
         <div className="chat">
         {chat.length === 0 && !load && (
           <div className="empty-state">
-            <div className="empty-mark">
-              <span className="mark-core" />
-            </div>
             <p>Tanya apa sahaja. Saya sedia bantu.</p>
           </div>
         )}
