@@ -98,9 +98,9 @@ const CodeBlock = memo(({ lang, content }) => {
           codeTagProps={{
             style: {
               display: "block",
-              whiteSpace: "pre",
-              wordBreak: "normal",
-              overflowWrap: "normal",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
               fontStyle: "normal",
             },
           }}
