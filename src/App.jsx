@@ -26,7 +26,7 @@ const CodeBlock = memo(({ lang, content }) => {
   function copyCode() {
     navigator.clipboard.writeText(content).then(() => {
       setIsCopied(true);
-      setTimeout(() => setIsCopied(null), 1500);
+      setTimeout(() => setIsCopied(false), 1500);
     });
   }
 
@@ -152,7 +152,7 @@ function App() {
     setError(null);
 
     try {
-      const res = await fetch("https://nexa-2fnl.onrender.com/chat", {
+      const res = await fetch("/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: text, history: historyForRequest }),
