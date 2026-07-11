@@ -1,4 +1,4 @@
-const askGroq = require("./Groq");
+const askGroq = require("./groq");
 
 async function askGeneral(question, history = []) {
   // Only use Groq for general queries as requested
