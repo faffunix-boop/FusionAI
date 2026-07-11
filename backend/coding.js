@@ -2,7 +2,7 @@ const askOpenRouter = require("./openrouter");
 
 async function askCoding(question, history = []) {
   return askOpenRouter(question, {
-    model: "qwen/qwen3-coder:free",
+    model: "cohere/north-mini-code:free",
     history,
     system: "Kamu pakar coding. PENTING untuk ketepatan:\n" +
       "- Tulis code dengan format KEMAS (indent betul, satu statement satu baris) — JANGAN tulis code padat/minified dalam satu baris panjang, sebab format padat lebih mudah tersilap logic (contoh: guna comma operator salah, kurang kurungan).\n" +
