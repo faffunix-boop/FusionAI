@@ -92,7 +92,10 @@ function App() {
       const isInline = !match;
       const lang = match ? match[1] : "text";
       const content = String(children).replace(/\n$/, "");
-      const key = node?.position ? `${node.position.start.line}-${node.position.start.column}` : Math.random().toString();
+      // Use index or content hash for more stable key than random
+      const key = node?.position
+        ? `${node.position.start.line}-${node.position.start.column}`
+        : content.slice(0, 20) + content.length;
 
       if (isInline) {
         return (
@@ -114,18 +117,18 @@ function App() {
             <SyntaxHighlighter
               language={lang}
               style={oneDark}
+              wrapLongLines={false}
               customStyle={{
                 margin: 0,
                 borderRadius: "0 0 10px 10px",
                 padding: "15px",
                 fontSize: "12.5px",
-                whiteSpace: "pre-wrap",
-                overflowWrap: "break-word",
+                whiteSpace: "pre",
+                overflowX: "auto",
               }}
               codeTagProps={{
                 style: {
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "break-word",
+                  whiteSpace: "pre",
                 },
               }}
             >
