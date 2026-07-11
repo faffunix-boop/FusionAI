@@ -329,6 +329,7 @@ body {
 
 input {
   flex: 1;
+  min-width: 0;
   padding: 15px 18px;
   border-radius: 30px;
   border: 1px solid var(--line);
