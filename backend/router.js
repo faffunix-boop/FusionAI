@@ -1,29 +1,35 @@
-const askGroq = require("./groq");
+const axios = require("axios");
+require("dotenv").config();
 
-async function classifyTask(question, history = []) {
-  const recentContext = history
-    .slice(-4)
-    .map((h) => `${h.role}: ${h.content}`)
-    .join("\n");
+async function askOpenRouter(message, options = {}) {
+  const { system, model, history } = options;
 
-  const prompt = `Klasifikasikan mesej TERKINI ni ke SATU kategori sahaja: code atau general.
-
-code = soalan pasal programming, code, debug, error, function, script, syntax — ATAU sambungan/susulan dari perbualan tentang code (contoh: "selain itu?", "ada lagi?", "macam mana pulak" selepas topik sebelum ni pasal code).
-general = semua yang lain (sembang biasa, nasihat, pengetahuan umum, sejarah, konsep) yang TIDAK berkaitan code.
-
-${recentContext ? `Konteks perbualan sebelum ni:\n${recentContext}\n` : ""}
-Mesej TERKINI (klasifikasikan ni): ${question}
-
-Jawab dengan SATU perkataan sahaja: code atau general.`;
-
-  try {
-    const result = await askGroq(prompt, { model: "openai/gpt-oss-20b" });
-    const clean = result.trim().toLowerCase();
-    if (clean.includes("code")) return "code";
-    return "general";
-  } catch (e) {
-    return "general";
+  const messages = [];
+  if (system) {
+    messages.push({ role: "system", content: system });
   }
+  if (history && history.length) {
+    messages.push(...history);
+  }
+  messages.push({ role: "user", content: message });
+
+  const response = await axios.post(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      model: model || "qwen/qwen3-coder:free",
+      messages,
+    },
+    {
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://nexa-2fnl.onrender.com",
+        "X-Title": "Nexa",
+      },
+    }
+  );
+
+  return response.data.choices[0].message.content;
 }
 
-module.exports = classifyTask;
+module.exports = askOpenRouter;
