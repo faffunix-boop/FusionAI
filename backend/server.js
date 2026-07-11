@@ -29,8 +29,8 @@ app.post("/chat", async (req, res) => {
 
     res.json({ answer });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Ada masalah pada server" });
+    console.error("Error in /chat:", error.response?.status, error.response?.data || error.message);
+    res.status(500).json({ error: "Ada masalah pada server. Pastikan API key betul." });
   }
 });
 
