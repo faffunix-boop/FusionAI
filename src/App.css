@@ -131,19 +131,20 @@ body {
   width: 100%;
   min-width: 0;
   max-width: 96%;
-  padding: 22px 20px;
-  border-radius: 20px 20px 20px 4px;
-  background: var(--panel-2);
-  border: 1px solid var(--line);
+  padding: 24px 22px;
+  border-radius: 22px 22px 22px 6px;
+  background: rgba(23, 28, 36, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(130, 160, 180, 0.2);
   color: var(--text);
   font-size: 15px;
   font-weight: 400;
-  line-height: 1.75;
-  letter-spacing: 0.01em;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  transition: transform 0.2s ease;
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  overflow-wrap: break-word;
+  word-break: normal;
+  transition: all 0.2s ease;
 }
 
 /* ---------- Nexa Loading Animation ---------- */
@@ -283,16 +284,20 @@ button.send-btn {
 }
 
 /* Markdowns */
-.ai p { margin: 0 0 1.2rem 0; }
+.ai p { margin: 0 0 1.4rem 0; }
 .ai p:last-child { margin-bottom: 0; }
-.ai ul, .ai ol { margin: 0.8rem 0 1.2rem 1.6rem; padding: 0; }
-.ai li { margin-bottom: 0.5rem; }
+.ai ul, .ai ol { margin: 1rem 0 1.4rem 1.8rem; padding: 0; }
+.ai li { margin-bottom: 0.8rem; }
 .ai li:last-child { margin-bottom: 0; }
 .ai h1, .ai h2, .ai h3, .ai h4 {
-  margin: 1rem 0 0.8rem;
+  margin: 1.8rem 0 1rem;
   font-family: "Space Grotesk", sans-serif;
   color: var(--cyan);
-  line-height: 1.3;
+  line-height: 1.4;
+}
+
+.ai h1:first-child, .ai h2:first-child, .ai h3:first-child, .ai p:first-child {
+  margin-top: 0;
 }
 .ai h1 { font-size: 1.4rem; border-bottom: 1px solid var(--line); padding-bottom: 0.4rem; }
 .ai h2 { font-size: 1.2rem; }
@@ -343,12 +348,24 @@ button.send-btn {
 .ai blockquote {
   border-left: 4px solid var(--cyan-dim);
   background: rgba(70, 217, 224, 0.05);
-  margin: 1rem 0;
-  padding: 10px 20px;
-  border-radius: 0 8px 8px 0;
+  margin: 1.4rem 0;
+  padding: 12px 24px;
+  border-radius: 0 10px 10px 0;
   font-style: italic;
   color: var(--muted);
 }
+
+.ai strong {
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+.ai hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2rem 0;
+}
+
 .inline-code {
   background: rgba(70, 217, 224, 0.15);
   color: #5ffaff;
