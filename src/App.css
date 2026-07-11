@@ -247,7 +247,9 @@ body {
   padding: 18px 28px 28px;
   gap: 12px;
   width: 100%;
+  max-width: 100%;
   background: var(--void);
+  box-sizing: border-box;
 }
 
 input {
@@ -430,10 +432,20 @@ button.send-btn {
   .user { max-width: 85%; padding: 10px 14px; font-size: 14px; }
   .inputBox {
     padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
-    gap: 10px;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
   }
-  input { padding: 12px 15px; font-size: 16px; }
-  button.send-btn { width: 46px; height: 46px; flex-shrink: 0; }
+  input {
+    padding: 12px 15px;
+    font-size: 16px;
+    min-width: 0; /* Allow input to shrink below its default width */
+  }
+  button.send-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
 
   .code-block-header { padding: 8px 12px; }
   .copy-btn { padding: 3px 8px !important; }
