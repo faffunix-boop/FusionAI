@@ -7,16 +7,11 @@ import "./App.css";
 
 function App() {
   const [msg, setMsg] = useState("");
-  const [sessions, setSessions] = useState([{ id: 1, chat: [] }]);
-  const [activeSessionId, setActiveSessionId] = useState(1);
+  const [chat, setChat] = useState([]);
   const [load, setLoad] = useState(false);
   const [error, setError] = useState(null);
   const [copiedIdx, setCopiedIdx] = useState(null);
-  const [sidebarVisible, setSidebarVisible] = useState(false);
   const chatEndRef = useRef(null);
-
-  const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
-  const chat = activeSession.chat;
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,12 +26,7 @@ function App() {
       content: m.text,
     }));
 
-    const newUserMsg = { type: "user", text };
-
-    setSessions(prev => prev.map(s =>
-      s.id === activeSessionId ? { ...s, chat: [...s.chat, newUserMsg] } : s
-    ));
-
+    setChat((prev) => [...prev, { type: "user", text }]);
     setMsg("");
     setLoad(true);
     setError(null);
@@ -51,25 +41,14 @@ function App() {
       if (!res.ok) throw new Error(`Server balas status ${res.status}`);
       const data = await res.json();
 
-      setSessions(prev => prev.map(s =>
-        s.id === activeSessionId ? { ...s, chat: [...s.chat, { type: "ai", text: data.answer }] } : s
-      ));
+      setChat((prev) => [...prev, { type: "ai", text: data.answer }]);
     } catch (err) {
       setError("Gagal hubungi server. Cuba refresh.");
-      setSessions(prev => prev.map(s =>
-        s.id === activeSessionId ? { ...s, chat: [...s.chat, { type: "ai", text: "⚠️ Maaf, saya tak dapat balas sekarang." }] } : s
-      ));
+      setChat((prev) => [...prev, { type: "ai", text: "⚠️ Maaf, saya tak dapat balas sekarang." }]);
       console.error(err);
     } finally {
       setLoad(false);
     }
-  }
-
-  function createNewChat() {
-    const newId = Date.now();
-    setSessions(prev => [{ id: newId, chat: [] }, ...prev]);
-    setActiveSessionId(newId);
-    setSidebarVisible(false);
   }
 
   function handleKeyDown(e) {
@@ -92,7 +71,6 @@ function App() {
       const isInline = !match;
       const lang = match ? match[1] : "text";
       const content = String(children).replace(/\n$/, "");
-      // Use index or content hash for more stable key than random
       const key = node?.position
         ? `${node.position.start.line}-${node.position.start.column}`
         : content.slice(0, 20) + content.length;
@@ -141,34 +119,9 @@ function App() {
   };
 
   return (
-    <div className={`app-container ${sidebarVisible ? "sidebar-visible" : ""}`}>
-      <aside className="sidebar">
-        <button className="new-chat-btn" onClick={createNewChat}>
-          <span>+</span> New Chat
-        </button>
-        <div className="history-section">
-          <h3>History</h3>
-          <div className="history-list">
-            {sessions.map(s => (
-              <div
-                key={s.id}
-                className={`history-item ${s.id === activeSessionId ? "active" : ""}`}
-                onClick={() => { setActiveSessionId(s.id); setSidebarVisible(false); }}
-              >
-                <div className="history-title">
-                  {s.chat.length > 0 ? s.chat[0].text : "Empty Chat"}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </aside>
-
+    <div className="app-container">
       <div className="app">
         <header className="top">
-          <button className="menu-toggle" onClick={() => setSidebarVisible(!sidebarVisible)}>
-            ☰
-          </button>
           <div className="mark">
             <div className="mark-core" />
           </div>
