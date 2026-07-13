@@ -12,3 +12,6 @@ async function askCoding(question, history = []) {
         "Kamu pakar coding. Tulis code dengan format kemas (indent betul, satu statement satu baris). " +
         "Untuk soalan simple, bagi code paling ringkas. Jangan reka konsep yang pengguna tak minta.",
     });
+}
+
+module.exports = askCoding;
