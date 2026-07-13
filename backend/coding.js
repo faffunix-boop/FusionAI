@@ -7,7 +7,7 @@ async function askCoding(question, history = []) {
       model: "tencent/hy3:free",
       history,
       system:
-        "Kamu pakar coding. Tulis code dengan format kemas (indent betul, satu statement satu baris). ",
+        "Kamu pakar coding. Tulis code dengan format kemas (indent betul, satu statement satu baris).",
     });
 
     return draft;
