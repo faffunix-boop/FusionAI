@@ -2,26 +2,39 @@ const askOpenRouter = require("./openrouter");
 const askGroq = require("./groq");
 
 async function askCoding(question, history = []) {
-  let draft;
-
   try {
-    draft = await askOpenRouter(question, {
+    // AI pertama buat code
+    const draft = await askOpenRouter(question, {
       model: "tencent/hy3:free",
       history,
     });
 
+    // AI kedua semak + baiki
     const review = await askGroq(
-      `Kamu adalah code reviewer.
+`SYSTEM:
+Kamu adalah AI Code Fixer.
 
-Semak code ini:
-${draft}
+TUGAS:
+Baiki code yang diberikan.
 
-Jika ada bug, baiki.
-Pulangkan keseluruhan code yang sudah diperbaiki.
-Jangan beri penerangan.`,
+RULES:
+1. Cari semua bug dan error.
+2. Perbaiki code tersebut.
+3. Pulangkan CODE PENUH yang sudah diperbaiki.
+4. Jangan beri penerangan.
+5. Jangan beri komen tentang perubahan.
+6. Jangan tulis analisis.
+7. Jangan tulis "ini code yang diperbaiki".
+8. Jangan gunakan markdown.
+9. Output hanya code sahaja.
+
+Jika code sudah betul, pulangkan code asal.
+
+INPUT CODE:
+${draft}`,
       {
         model: "qwen/qwen3.6-27b",
-        history,
+        history: []
       }
     );
 
