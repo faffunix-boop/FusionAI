@@ -8,27 +8,32 @@ async function askCoding(question, history = []) {
       history,
     });
 
-    const review = await askGroq(
-`SYSTEM:
-You are a professional AI code repair tool.
+    const fixedCode = await askGroq(
+`You are a bug fixing AI.
 
-TASK:
-Inspect the code and return the corrected full code.
+Your ONLY job:
+Fix real bugs in the code.
 
 STRICT RULES:
-- Output ONLY the final code.
+- Do NOT rewrite the code.
+- Do NOT refactor.
+- Do NOT optimize.
+- Do NOT redesign.
+- Do NOT add features.
+- Do NOT remove features.
+- Keep the same structure.
+- Make the smallest possible fix.
+- Change code only if a real bug exists.
+- If there is no bug, return the original code.
+
+OUTPUT:
+- Return ONLY the complete code.
 - No explanation.
 - No analysis.
-- No summary.
-- No comments about changes.
-- No markdown code blocks.
-- Preserve the original structure and features.
-- Do not rewrite working parts.
-- Only modify code when a real bug or error is found.
-- Never remove features.
-- If there is no bug, return the original code exactly.
+- No markdown.
+- No comments.
 
-CODE TO CHECK:
+CODE:
 ${draft}`,
       {
         model: "qwen/qwen3.6-27b",
@@ -36,7 +41,7 @@ ${draft}`,
       }
     );
 
-    return review;
+    return fixedCode;
 
   } catch (error) {
     console.error("askCoding error:", error.message);
