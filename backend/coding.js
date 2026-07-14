@@ -20,7 +20,7 @@ Jika ada bug, baiki.
 Pulangkan keseluruhan code yang sudah diperbaiki.
 Jangan beri penerangan.`,
       {
-        model: "deepseek-r1-distill-qwen-32b",
+        model: "openai/gpt-oss-120b",
         history,
       }
     );
