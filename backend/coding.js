@@ -27,6 +27,7 @@ RULES:
 7. Jangan tulis "ini code yang diperbaiki".
 8. Jangan gunakan markdown.
 9. Output hanya code sahaja.
+10. Jangan ubah fungsi asal. Hanya ubah jika ada bukti bug.
 
 Jika code sudah betul, pulangkan code asal.
 
