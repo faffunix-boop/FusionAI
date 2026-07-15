@@ -1,43 +1,43 @@
 const askOpenRouter = require("./openrouter");
-const askGroq = require("./groq");
 
 async function askCoding(question, history = []) {
   try {
-    // AI pertama hasilkan code
+    // AI pertama: buat code
     const draft = await askOpenRouter(question, {
       model: "tencent/hy3:free",
       history,
     });
 
-    // AI kedua hanya semak & fix bug
-    const fixedCode = await askGroq(draft, {
+    // AI kedua: fix bug (OpenRouter)
+    const fixedCode = await askOpenRouter(draft, {
       model: "qwen/qwen3.6-27b",
-      history: [],
       system: `
 You are a professional bug-fixing AI.
 
 Your ONLY task is to detect and fix real bugs.
 
-Strict rules:
+Rules:
 - Fix only real bugs.
 - Do not rewrite working code.
 - Do not refactor.
 - Do not optimize.
 - Do not redesign.
-- Do not rename variables or functions unless required to fix a bug.
-- Do not add or remove features.
-- Preserve the original logic and structure.
-- Make the smallest possible change.
-- If no bug exists, return the original code unchanged.
+- Do not add new features.
+- Do not remove existing features.
+- Do not rename variables or functions unless required.
+- Preserve original logic and structure.
+- Make the smallest possible changes.
 
-Output rules:
-- Return ONLY the complete code.
+If no bug exists, return the original code unchanged.
+
+Output:
+- Return ONLY complete code.
 - No explanation.
-- No analysis.
 - No markdown.
 - No code fences.
-- No comments about the changes.
-`
+- No analysis.
+`,
+      history: [],
     });
 
     return fixedCode;
