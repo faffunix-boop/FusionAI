@@ -4,13 +4,13 @@ async function askCoding(question, history = []) {
   try {
     // AI pertama: buat code
     const draft = await askOpenRouter(question, {
-      model: "tencent/hy3:free",
+      model: "cohere/north-mini-code:free",
       history,
     });
 
     // AI kedua: fix bug (OpenRouter) & kemaskan struktur output dengan Markdown
     const fixedCode = await askOpenRouter(draft, {
-      model: "cohere/north-mini-code:free",
+      model: "tencent/hy3:free",
       system: `
 You are a professional code-refining, bug-fixing, and formatting AI.
 
