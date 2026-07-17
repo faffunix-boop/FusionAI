@@ -3,7 +3,7 @@ const askOpenRouter = require("./openrouter");
 async function askCoding(question, history = [], onProgress = () => {}) {
   let draft;
 
-  onProgress("Laguna AI sedang membuat code...");
+  onProgress("AI sedang membuat code...");
 
   try {
     draft = await askOpenRouter(question, {
@@ -21,7 +21,7 @@ async function askCoding(question, history = [], onProgress = () => {}) {
     throw err;
   }
 
-  onProgress("Code disemak oleh GPT...");
+  onProgress("Code disemak...");
 
   const reviewPrompt = `Semak code berikut dan betulkan jika ada bug.
 
