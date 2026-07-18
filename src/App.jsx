@@ -165,7 +165,7 @@ function App() {
           </div>
           <div>
             <h1>Nexa</h1>
-            <p>Auto Multi AI Agent</p>
+            <p>Auto Llm AI</p>
           </div>
         </header>
 
