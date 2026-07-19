@@ -138,15 +138,12 @@ body {
   max-width: 100%;
   padding: 24px 22px;
   border-radius: 22px 22px 22px 6px;
-  background: rgba(23, 28, 36, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(130, 160, 180, 0.2);
-  color: var(--text);
+  background: transparent;
+  color: #ececec;
   font-size: 15px;
   font-weight: 400;
   line-height: 1.8;
   letter-spacing: 0.015em;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
   overflow-wrap: break-word;
   word-break: normal;
   transition: all 0.2s ease;
@@ -200,9 +197,9 @@ body {
 /* ---------- CodeBlock ---------- */
 .code-block-wrapper {
   margin: 14px 0;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid #2f2f2f;
+  background: #0d0d0d;
   overflow: hidden;
   max-width: 100%;
   display: flex;
@@ -218,14 +215,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid var(--line);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
+  padding: 8px 16px;
+  background: #2f2f2f;
+  border-bottom: 1px solid #2f2f2f;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: lowercase;
+  color: #b4b4b4;
 }
 
 /* ---------- Error Banner ---------- */
@@ -278,20 +274,20 @@ button.send-btn {
 .copy-btn {
   width: auto !important;
   height: auto !important;
-  padding: 4px 10px !important;
-  border-radius: 6px !important;
-  background: rgba(70, 217, 224, 0.1) !important;
-  border: 1px solid rgba(70, 217, 224, 0.2) !important;
-  color: var(--cyan) !important;
-  font-size: 10px !important;
-  font-weight: 600;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #b4b4b4 !important;
+  font-size: 12px !important;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.2s;
   text-transform: none;
 }
 
 .copy-btn:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
 }
 
 @keyframes pulse {
@@ -312,15 +308,15 @@ button.send-btn {
 .ai li:last-child { margin-bottom: 0; }
 .ai h1, .ai h2, .ai h3, .ai h4 {
   margin: 1.8rem 0 1rem;
-  font-family: "Space Grotesk", sans-serif;
-  color: var(--cyan);
+  font-family: "Inter", sans-serif;
+  color: #ffffff;
   line-height: 1.4;
 }
 
 .ai h1:first-child, .ai h2:first-child, .ai h3:first-child, .ai p:first-child {
   margin-top: 0;
 }
-.ai h1 { font-size: 1.4rem; border-bottom: 1px solid var(--line); padding-bottom: 0.4rem; }
+.ai h1 { font-size: 1.4rem; border-bottom: 1px solid #2f2f2f; padding-bottom: 0.4rem; }
 .ai h2 { font-size: 1.2rem; }
 .ai h3 { font-size: 1.1rem; }
 
@@ -350,8 +346,8 @@ button.send-btn {
 }
 
 .ai th {
-  background: rgba(70, 217, 224, 0.1);
-  color: var(--cyan);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 11px;
@@ -359,25 +355,25 @@ button.send-btn {
 }
 
 .ai tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .ai tr:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .ai blockquote {
-  border-left: 4px solid var(--cyan-dim);
-  background: rgba(70, 217, 224, 0.05);
+  border-left: 4px solid #4b5563;
+  background: rgba(255, 255, 255, 0.02);
   margin: 1.4rem 0;
   padding: 12px 24px;
   border-radius: 0 10px 10px 0;
   font-style: italic;
-  color: var(--muted);
+  color: #9ca3af;
 }
 
 .ai strong {
-  color: var(--cyan);
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -388,15 +384,15 @@ button.send-btn {
 }
 
 .inline-code {
-  background: rgba(70, 217, 224, 0.15);
-  color: #5ffaff;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ececec;
   padding: 2px 6px;
-  border-radius: 6px;
+  border-radius: 4px;
   font-family: "JetBrains Mono", monospace;
   font-size: 0.85em;
   font-weight: 500;
   display: inline !important;
-  border: 1px solid rgba(70, 217, 224, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 .code-block-body code {
   display: block !important;

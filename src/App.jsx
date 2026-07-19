@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "./App.css";
@@ -122,13 +122,13 @@ function App() {
           <div className="code-block-header">
             <span className="code-lang">{lang}</span>
             <button className="copy-btn" onClick={() => copyCode(content, key)}>
-              {copiedIdx === key ? "Disalin!" : "Salin"}
+              {copiedIdx === key ? "Disalin!" : "Salin kod"}
             </button>
           </div>
           <div className="code-block-body">
             <SyntaxHighlighter
               language={lang}
-              style={oneDark}
+              style={okaidia}
               wrapLongLines={true}
               customStyle={{
                 margin: 0,
@@ -136,7 +136,7 @@ function App() {
                 padding: "12px 14px",
                 fontSize: "12px",
                 lineHeight: "1.5",
-                background: "transparent",
+                background: "#0d0d0d",
                 whiteSpace: "pre-wrap",
                 overflowWrap: "anywhere",
                 wordBreak: "break-word",
