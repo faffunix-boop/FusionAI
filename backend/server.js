@@ -2,9 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-const classifyTask = require("./router");
-const askGeneral = require("./general");
-const askCoding = require("./coding");
+const { runPipeline } = require("./pipeline/pipeline");
 
 const app = express();
 
@@ -23,14 +21,25 @@ app.post("/chat", async (req, res) => {
   if (res.flushHeaders) res.flushHeaders();
 
   function sendStatus(text) {
-    res.write(`data: ${JSON.stringify({ type: "status", text })}\n\n`);
+    res.write(`data: ${JSON.stringify({
+      type: "status",
+      text
+    })}\n\n`);
   }
+
   function sendAnswer(text) {
-    res.write(`data: ${JSON.stringify({ type: "answer", text })}\n\n`);
+    res.write(`data: ${JSON.stringify({
+      type: "answer",
+      text
+    })}\n\n`);
     res.end();
   }
+
   function sendError(text) {
-    res.write(`data: ${JSON.stringify({ type: "error", text })}\n\n`);
+    res.write(`data: ${JSON.stringify({
+      type: "error",
+      text
+    })}\n\n`);
     res.end();
   }
 
@@ -39,20 +48,19 @@ app.post("/chat", async (req, res) => {
       return sendError("Mesej tak boleh kosong.");
     }
 
-    const task = await classifyTask(question, history || []);
+    sendStatus("🚀 Menjalankan Nexa Pipeline...");
 
-    let answer;
-    if (task === "code") {
-      answer = await askCoding(question, history || [], sendStatus);
-    } else {
-      sendStatus("GPT sedang berfikir...");
-      answer = await askGeneral(question, history || []);
-    }
+    const answer = await runPipeline({
+      question,
+      history: history || [],
+      sendStatus
+    });
 
     sendAnswer(answer);
-  } catch (error) {
-    console.error("Error in /chat:", error.response?.status, error.response?.data || error.message);
-    sendError("Ada masalah pada server. Pastikan API key betul.");
+
+  } catch (err) {
+    console.error(err);
+    sendError(err.message || "Pipeline Error");
   }
 });
 
@@ -61,6 +69,7 @@ app.use((req, res) => {
 });
 
 const port = process.env.PORT || 3000;
+
 app.listen(port, () => {
-  console.log(`Server jalan di port ${port}!`);
+  console.log(`🚀 Nexa Server Running : ${port}`);
 });
