@@ -12,6 +12,7 @@ function App() {
   const [error, setError] = useState(null);
   const [copiedIdx, setCopiedIdx] = useState(null);
   const [statusText, setStatusText] = useState("Nexa sedang berfikir...");
+  const [expandedProcess, setExpandedProcess] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -47,6 +48,7 @@ function App() {
       let buffer = "";
       let finalAnswer = null;
       let serverError = null;
+      const processLog = [];
 
       while (true) {
         const { done, value } = await reader.read();
@@ -62,6 +64,7 @@ function App() {
 
           if (data.type === "status") {
             setStatusText(data.text);
+            processLog.push(data.text);
           } else if (data.type === "answer") {
             finalAnswer = data.text;
           } else if (data.type === "error") {
@@ -73,7 +76,7 @@ function App() {
       if (serverError) throw new Error(serverError);
       if (finalAnswer === null) throw new Error("Tiada jawapan diterima.");
 
-      setChat((prev) => [...prev, { type: "ai", text: finalAnswer }]);
+      setChat((prev) => [...prev, { type: "ai", text: finalAnswer, process: processLog }]);
     } catch (err) {
       setError("Gagal hubungi server. Cuba refresh.");
       setChat((prev) => [...prev, { type: "ai", text: "⚠️ Maaf, saya tak dapat balas sekarang." }]);
@@ -165,7 +168,7 @@ function App() {
           </div>
           <div>
             <h1>Nexa</h1>
-            <p>Auto Llm AI</p>
+            <p>Auto Multi AI Agent</p>
           </div>
         </header>
 
@@ -188,6 +191,25 @@ function App() {
                   </ReactMarkdown>
                 ) : (
                   <p className="msg-text">{c.text}</p>
+                )}
+                {c.type === "ai" && c.process && c.process.length > 0 && (
+                  <div className="process-info">
+                    <button
+                      className="process-toggle"
+                      onClick={() =>
+                        setExpandedProcess(expandedProcess === i ? null : i)
+                      }
+                    >
+                      {expandedProcess === i ? "▲" : "▼"} Lihat proses ({c.process.length} langkah)
+                    </button>
+                    {expandedProcess === i && (
+                      <ol className="process-list">
+                        {c.process.map((step, idx) => (
+                          <li key={idx}>{step}</li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
