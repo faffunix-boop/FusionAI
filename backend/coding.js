@@ -14,7 +14,7 @@ async function askCoding(question, history = [], onProgress = () => {}) {
   logger.stage("Planner", t0);
 
   // ---- Coder ----
-  onProgress("AI sedang membuat code...");
+  onProgress("Laguna AI sedang membuat code...");
   const contextPrompt = rancangan
     ? `Rancangan:\n${rancangan}\n\nSoalan pengguna: ${question}`
     : question;
@@ -26,7 +26,12 @@ async function askCoding(question, history = [], onProgress = () => {}) {
       history,
       system:
         "Kamu pakar coding. Tulis code dengan format kemas (indent betul, satu statement satu baris). " +
-        "Untuk soalan simple, bagi code paling ringkas. Jangan reka konsep yang pengguna tak minta.",
+        "PENTING: panjang/kelengkapan code kena SEPADAN dengan kompleksiti request — " +
+        "untuk soalan betul-betul simple (contoh: print satu baris, function asas), bagi ringkas. " +
+        "TAPI untuk request yang perlukan fungsi lengkap (contoh: game, app dengan banyak fitur, " +
+        "sistem dengan pelbagai bahagian), bagi code YANG LENGKAP dan BERFUNGSI sepenuhnya — " +
+        "jangan potong pendek atau tinggalkan bahagian penting sekadar nak 'ringkas'. " +
+        "Jangan reka konsep yang pengguna tak minta.",
     });
     if (!draft?.trim()) throw new Error("OpenRouter tidak mengembalikan jawapan.");
   } catch (err) {
@@ -35,7 +40,7 @@ async function askCoding(question, history = [], onProgress = () => {}) {
   logger.stage("Coder", t0);
 
   // ---- Reviewer ----
-  onProgress("Code disemak...");
+  onProgress("Code disemak oleh GPT...");
   const reviewPrompt = `Semak code berikut dan betulkan jika ada bug.
 
 Soalan:
