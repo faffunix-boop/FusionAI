@@ -1,89 +1,178 @@
 const path = require("path");
 
+let pipelineStart = 0;
+const moduleTimes = new Map();
+
 function now() {
-  return new Date().toLocaleTimeString("ms-MY", {
+  return new Date().toLocaleTimeString("en-GB", {
     hour12: false
   });
 }
 
-function line(error) {
-  if (!error || !error.stack) return "-";
+function hr() {
+  return Number(process.hrtime.bigint()) / 1e6;
+}
 
-  const stack = error.stack.split("\n");
+function stackLine(err) {
+  if (!err || !err.stack) return "-";
 
-  for (const s of stack) {
-    if (s.includes("backend")) {
-      return s.trim();
+  const lines = err.stack.split("\n");
+
+  for (const line of lines) {
+    if (line.includes("backend")) {
+      return line.trim();
     }
   }
 
-  return stack[1]?.trim() || "-";
+  return lines[1]?.trim() || "-";
 }
 
 module.exports = {
 
-  start() {
-    console.log("\n========================================");
-    console.log(`[${now()}]  PIPELINE START`);
-    console.log("========================================");
+  start(question = "") {
+
+    pipelineStart = hr();
+
+    console.log("\n==================================================");
+    console.log("PIPELINE START");
+    console.log("==================================================");
+
+    console.log(`Time     : ${now()}`);
+
+    if (question) {
+      console.log(`Question : ${question}`);
+    }
+
+    console.log("");
+
   },
 
-  finish() {
-    console.log("========================================");
-    console.log(`[${now()}]  PIPELINE FINISH`);
-    console.log("========================================\n");
+  moduleStart(name) {
+
+    moduleTimes.set(name, hr());
+
+    console.log("----------------------------------------");
+    console.log(name);
+    console.log("----------------------------------------");
+
   },
 
-  info(module, message) {
-    console.log(`[${now()}]   ${module}`);
-    console.log(`   ${message}`);
+  moduleSuccess(name, extra = "") {
+
+    const start = moduleTimes.get(name) || hr();
+
+    const elapsed = (hr() - start).toFixed(2);
+
+    console.log("Status : OK");
+
+    console.log(`Time   : ${elapsed} ms`);
+
+    if (extra) {
+      console.log(extra);
+    }
+
+    console.log("");
+
   },
 
-  success(module, message) {
-    console.log(`[${now()}]  ${module}`);
-    console.log(`   ${message}`);
-  },
+  moduleFail(name, err) {
 
-  warn(module, message) {
-    console.log(`[${now()}]  ${module}`);
-    console.log(`   ${message}`);
-  },
+    const start = moduleTimes.get(name) || hr();
 
-  error(module, err) {
+    const elapsed = (hr() - start).toFixed(2);
 
-    console.log("\n========================================");
-    console.log(`[${now()}]  ERROR`);
-    console.log("========================================");
+    console.log("Status : FAILED");
 
-    console.log(`Module : ${module}`);
+    console.log(`Time   : ${elapsed} ms`);
 
-    console.log(
-      `Type   : ${err.name || "Error"}`
-    );
+    console.log("");
 
-    console.log(
-      `Reason : ${err.message || err}`
-    );
+    console.log("Reason");
 
-    console.log(
-      `Line   : ${line(err)}`
-    );
+    console.log("------");
+
+    console.log(err.message);
 
     if (err.response) {
 
-      console.log(
-        `Status : ${err.response.status}`
-      );
+      console.log("");
 
-      console.log(
-        "Response:"
-      );
-
-      console.log(err.response.data);
+      console.log(`HTTP : ${err.response.status}`);
 
     }
 
-    console.log("========================================\n");
+    console.log("");
+
+    console.log("Stack");
+
+    console.log("-----");
+
+    console.log(stackLine(err));
+
+    console.log("");
+
+  },
+
+  pipelineInfo(data = {}) {
+
+    if (data.provider)
+      console.log(`Provider : ${data.provider}`);
+
+    if (data.model)
+      console.log(`Model    : ${data.model}`);
+
+    if (data.task)
+      console.log(`Task     : ${data.task}`);
+
+    console.log("");
+
+  },
+
+  finish() {
+
+    const total = (hr() - pipelineStart).toFixed(2);
+
+    console.log("==================================================");
+
+    console.log("PIPELINE FINISH");
+
+    console.log("==================================================");
+
+    console.log(`Total Time : ${total} ms`);
+
+    console.log("");
+
+  },
+
+  error(err) {
+
+    const total = (hr() - pipelineStart).toFixed(2);
+
+    console.log("==================================================");
+
+    console.log("PIPELINE ERROR");
+
+    console.log("==================================================");
+
+    console.log(`Type   : ${err.name}`);
+
+    console.log(`Reason : ${err.message}`);
+
+    if (err.response) {
+
+      console.log(`Status : ${err.response.status}`);
+
+    }
+
+    console.log("");
+
+    console.log(stackLine(err));
+
+    console.log("");
+
+    console.log(`Elapsed : ${total} ms`);
+
+    console.log("==================================================");
 
   }
 
